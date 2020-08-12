@@ -47,6 +47,18 @@ def get_participants():
 def target_participants(participants_list, send_when="one day before", silent=False):
     """
     Target participants to be contacted either "one day before" or "experiment day"
+
+    Parameters
+    ----------
+    participants_list: pd.DataFrame
+        This code has the column names ['Participant Name', 'Subject ID', 'Condition',
+        'Email', 'Phone', 'Date_Session1', 'Location_Session1', 'Timeslot_Session1',
+        'Date_Session2', 'Location_Session2', 'Timeslot_Session2']
+    send_when: str
+        Can be 'one day before' or on 'experiment day'
+    silent: bool
+        Prints number of participants to be contacted.
+
     """
     participants_confirmed = participants_list[2]
 
@@ -111,7 +123,6 @@ def send_session_reminder(participants_list, message_type='Session 1'):
     # Prepare email structure and content for sending
     for index, participant in participants.iterrows():
 #        to_email = participant['Email']  # activate when ready!!!!!
-        to_email = 'lauzenjuen@gmail.com'
 
         message = MIMEMultipart('alternative')
         message["From"] = from_email
@@ -197,8 +208,7 @@ def send_declaration_form(participants_list, message_type='Session 1'):
 
     # Prepare email structure and content for sending
     for index, participant in participants.iterrows():
-#        to_email = participant['Email']  # activate when ready
-        to_email = 'lauzenjuen@gmail.com'
+        to_email = participant['Email']  # activate when ready
 
         message = MIMEMultipart('alternative')
         message["From"] = from_email
