@@ -1,15 +1,56 @@
 # Automate Reminder Emails for Research Participants
+
 **AutoRemind** is an email automation system for sending customizable reminders to participants at different timepoints throughout a study.
-This code was written for a study protocol where each participant has 2 sessions of experiments (on two separate days), and
-- Has to be contacted *one day before* each session
-- Has to be contacted *on the morning of* each session
 
+## Most Ideal For
+This code was written for a very specific study protocol after a personally exasperating experience of manually emailing participants :smile:
+This system will be useful if your study is **longitudinal** and comprises of
+- Screening participants for *eligibility*
+- Sending *different reminder emails* for *several sessions* across a period of time
 
-Running `autoremind.py` will mass send the desired mails to your participants together with printed feedback on how many subjects were contacted:
+## Features
+1) Sends emails to inform participants of their **eligibility**
+2) Sends reminder emails to scheduled participants **one day before each session**
+3) Sends reminder emails to scheduled participants on the **day of the session**
+   - For now, in the message template in `autoremind.py`, this is a reminder to complete a health and travel declaration form on the morning of the experiment.
+
+## Try it Yourself 
+The example csv files in this repository are meant to facilitate trial-and-error with AutoRemind. Simply change the `email` entries in the csv files to your own email address to receive templates of the messages as laid out in `autoremind.py`. You would also need to have a `secret.py` file containing your gmail credentials. If an authentication error occurs, it is most likely because you have to change the settings in your gmail account to allow access to less secure apps.
+
+**In summary, you should have:**
+- Two separate files containing information of participants who are eligibile vs. ineligible (`example_eligible.csv` and `example_ineligible.csv` respectively)
+  - Columns required for email customization:
+    - *Name*
+    - *Email*
+ 
+- One file containing information of scheduled participants:
+  - Columns required for email customization:
+    - *Participant Name*
+    - *Email*
+    - *Phone*
+    - Session 1 Details: *Date_Session1*, *Timeslot_Session1*, *Location_Session1*
+    - Session 2 Details: *Date_Session2*, *Timeslot_Session2*, *Location_Session2*
+*If you have more than two sessions in your experiment, you can customize your own code to include them.
+
+**Code Structure**
+- **Extract participants**: `get_participants()` imports the csv files 
+- **Filter participants**:
+  - `target_eligibility()` identifies participants to be informed for being eligibility or non-eligible, with the ability to exclude participants who were already informed before.
+  - `target_participants()` identifies participants that need to be sent reminders today or tomorrow.
+- **Execute Sending**
+  - `send_inform_eligible()`: send emails to participants based on whether they were eligible or not
+  - `send_session_reminder()`: send emails to participants one day before respective sessions (for now, the code accommodates only Session 1 and Session 2)
+  - `send_inform_eligible()`: send emails to participants based on whether they were eligible or not
+  - `send_session_reminder()`: send reminder email one day before respective sessions
+  - `send_declaration_form()`: send health and travel (for COVID-19) declaration forms on the day of the session-
+ 
+These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails e.g., if you only want to send one-day-prior reminders, set `send_reminders=True` and `send_forms` and `send_eligible` to False. Once you're happy with the customization, it is this exact chunk in `autoremind.py` that executes the sending. 
 ```
-runfile('C:/Users/Zen Juen/OneDrive/Documents/GitHub/AutoRemind/autoremind.py', wdir='C:/Users/Zen Juen/OneDrive/Documents/GitHub/AutoRemind')
-Retrieving participants particulars
+autoremind(participants_list, silent=False, send_eligible=False, send_reminders=True, send_forms=False)
+```                         
 
+Running `autoremind.py` will mass send the desired mails to your participants together with printed feedback on **how many subjects** and **exactly who** were contacted, like so:
+```
 2 eligible participants contacted.
 3 ineligible participants contacted.
 Sending successful eligibility outcome to: ['Subject11', 'Subject12']
@@ -21,11 +62,9 @@ experiment day: No session 1 participants to be contacted.
 experiment day: 2 participants to be contacted for session 2.
 Sending health and travel declaration forms to: ['Subject_1', 'Subject_2']
 ```
-P.S. This package was borne out of a personal exasperating experience of manually emailing participants :smile:
 
-Still a **Work in Progress** :octocat:
-Feel free to reach out if you've got any suggestions on how to improve / problems with the code!
 
 
 ## Other Resources
 - [autoemailer.py](https://github.com/colinquirk/autoemailer/) which also greatly inspired this repository!
+Feel free to reach out if you've got any suggestions on how to improve / problems with the code!
