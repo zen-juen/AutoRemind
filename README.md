@@ -1,15 +1,15 @@
-# Automate Reminder Emails for Research Participants
+# Automate Reminder Emails for Research Participants :e-mail:
 
 **AutoRemind** is an email automation system for sending customizable reminders to participants at different timepoints throughout a study.
 
-## Most Ideal For
+## Most Ideal For :star:
 This code was written for a very specific study protocol after a personally exasperating experience of manually emailing participants :smile:
 This system will be useful if your study is **longitudinal** and comprises of
 - Screening participants for *eligibility*
 - Sending *different reminder emails* for *several sessions* across a period of time
 
 
-## Features
+## Features :bulb:
 1) Sends emails to inform participants of their **eligibility**
 2) Sends reminder emails to scheduled participants **one day before each session**
 3) Sends reminder emails to scheduled participants on the **day of the session**
