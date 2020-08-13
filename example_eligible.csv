@@ -1,0 +1,13 @@
+﻿Name,Gender,Height,Weight,Birthday,Age,Email,Phone,Pregnant,MajorIllnesses,Claustrophobia,Tobacco,Tattoos,Over21
+Subject1,Female,161,60,11/4/1988,32.3,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject2,Female,160,52,10/12/1998,21.7,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject3,Male,170,70,10/4/1997,23.3,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject4,Female,149,67,15/7/1998,22.1,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject5,Male,173,64,26/6/1996,24.1,insertemailhere@gmail.com,1234567,Not Applicable,No,No,No,No,Yes
+Subject6,Female,162,61,27/6/1998,22.1,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject7,Female,168,55,10/7/1998,22.1,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject8,Female,167,54,30/10/1997,22.8,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject9,Female,163,59,1/8/1998,22,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject10,Female,164,59,3/7/1997,23.1,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject11,Female,152,47,20/8/1996,24,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject12,Female,151,49,17/9/1997,22.9,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes

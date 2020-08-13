@@ -1,0 +1,22 @@
+﻿Name,Gender,Height,Weight,Birthday,Age,Email,Phone,Pregnant,MajorIllnesses,Claustrophobia,Tobacco,Tattoos,Over21
+Subject1,Female,150,68,7/12/1982,37.7,insertemailhere@gmail.com,1234567,No,No,No,No,No,Yes
+Subject2,Male,179,115,22/2/1976,44.5,insertemailhere@gmail.com,1234567,No,Yes,No,No,Yes,Yes
+Subject3,Female,158,57.4,1/9/2000,19.9,insertemailhere@gmail.com,1234567,No,Yes,Yes,No,No,Yes
+Subject4,Male,180,68.9,4/8/1999,21,insertemailhere@gmail.com,1234567,No,No,No,No,Yes,Yes
+Subject5,Female,168,55,26/6/1999,21.1,insertemailhere@gmail.com,1234567,Not Applicable,Yes,No,No,No,Yes
+Subject6,Female,613,58,21/1/1997,23.6,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,Yes
+Subject7,Male,178,73,30/9/1998,21.9,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,No
+Subject8,Female,163,62,16/1/1998,22.6,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,Yes
+Subject9,Female,170,53,22/5/1999,21.2,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,Yes
+Subject10,Female,161,53,25/9/1999,20.9,insertemailhere@gmail.com,1234567,No,Yes,No,Yes,No,Yes
+Subject11,Female,150,45,21/9/1999,20.9,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,Yes
+Subject12,Male,170,84,11/8/1980,40,insertemailhere@gmail.com,1234567,No,Yes,No,No,No,Yes
+Subject13,Male,167,55,21/6/1998,22.1,insertemailhere@gmail.com,1234567,Yes,No,No,No,No,No
+Subject14,Female,165,55,31/3/1999,21.4,insertemailhere@gmail.com,1234567,No,No,No,No,No,No
+Subject15,Male,170,65,23/11/2000,19.7,insertemailhere@gmail.com,1234567,No,No,No,No,No,No
+Subject16,Female,154,65,13/11/1998,21.7,insertemailhere@gmail.com,1234567,No,No,Yes,No,No,No
+Subject17,Female,165,57,11/2/1999,21.5,insertemailhere@gmail.com,1234567,No,No,No,No,No,No
+Subject18,Female,157,57,12/10/1998,21.8,insertemailhere@gmail.com,1234567,No,No,No,No,No,No
+Subject19,Male,170,74,24/3/1998,22.4,insertemailhere@gmail.com,1234567,Yes,No,No,Yes,No,No
+Subject20,Male,165,50,28/12/1998,21.6,insertemailhere@gmail.com,1234567,Yes,No,No,No,No,No
+Subject21,Female,164,61,29/1/1998,22.5,insertemailhere@gmail.com,1234567,No,No,No,No,No,No
