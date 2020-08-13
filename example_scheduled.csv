@@ -1,4 +1,4 @@
-﻿Participant Name,Email,Phone,Date_Session1,Location_Session1,Timeslot_Session1,Date_Session2,Location_Session2,Timeslot_Session2,Date_Session3,Location_Session3,Timeslot_Session3,
-Subject_1,insertemailhere@gmail.com,1234567,13/8/2020,B1-26,11.00-11.30am,17/8/2020,Room 2 (B1-18),12.00-3.30pm,20/8/2020,B1-02,10.00-12.00pm,
-Subject_2,insertemailhere@gmail.com,1234567,13/8/2020,B1-26,10.30-11.00am,17/8/2020,Room 2 (B1-18),12.30-4.00pm,20/8/2020,B1-02,12.00-2.00pm,
-Subject_3,insertemailhere@gmail.com,1234567,13/8/2020,B1-26,4.00 - 4.30pm,17/8/2020,Room 2 (B1-18),1.00-4.30pm,20/8/2020,B1-02,2.00-4.00pm,
+﻿Participant Name,Email,Phone,Date_Session1,Location_Session1,Timeslot_Session1,Date_Session2,Location_Session2,Timeslot_Session2,Date_Session3,Location_Session3,Timeslot_Session3
+Subject_1,insertemailhere@gmail.com,1234567,12/8/2020,B1-26,11.00-11.30am,13/8/2020,Room 2 (B1-18),12.00-3.30pm,20/8/2020,B1-02,10.00-12.00pm
+Subject_2,insertemailhere@gmail.com,1234567,13/8/2020,B1-26,10.30-11.00am,14/8/2020,Room 2 (B1-18),12.30-4.00pm,20/8/2020,B1-02,12.00-2.00pm
+Subject_3,insertemailhere@gmail.com,1234567,13/8/2020,B1-26,4.00 - 4.30pm,14/8/2020,Room 2 (B1-18),1.00-4.30pm,20/8/2020,B1-02,2.00-4.00pm
