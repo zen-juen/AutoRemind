@@ -8,6 +8,7 @@ This system will be useful if your study is **longitudinal** and comprises of
 - Screening participants for *eligibility*
 - Sending *different reminder emails* for *several sessions* across a period of time
 
+
 ## Features
 1) Sends emails to inform participants of their **eligibility**
 2) Sends reminder emails to scheduled participants **one day before each session**
@@ -17,7 +18,7 @@ This system will be useful if your study is **longitudinal** and comprises of
 ## Try it Yourself 
 The example csv files in this repository are meant to facilitate trial-and-error with AutoRemind. Simply change the `email` entries in the csv files to your own email address to receive templates of the messages as laid out in `autoremind.py`. You would also need to have a `secret.py` file containing your gmail credentials. If an authentication error occurs, it is most likely because you have to change the settings in your gmail account to allow access to less secure apps.
 
-**In summary, you should have:**
+### In summary, you should have
 - Two separate files containing information of participants who are eligibile vs. ineligible (`example_eligible.csv` and `example_ineligible.csv` respectively)
   - Columns required for email customization:
     - *Name*
@@ -30,9 +31,11 @@ The example csv files in this repository are meant to facilitate trial-and-error
     - *Phone*
     - Session 1 Details: *Date_Session1*, *Timeslot_Session1*, *Location_Session1*
     - Session 2 Details: *Date_Session2*, *Timeslot_Session2*, *Location_Session2*
-*If you have more than two sessions in your experiment, you can customize your own code to include them.
 
-**Code Structure**
+If you have more than two sessions in your experiment, you can customize your own code to include them.
+
+### Code Structure
+
 - **Extract participants**: `get_participants()` imports the csv files 
 - **Filter participants**:
   - `target_eligibility()` identifies participants to be informed for being eligibility or non-eligible, with the ability to exclude participants who were already informed before.
@@ -44,7 +47,7 @@ The example csv files in this repository are meant to facilitate trial-and-error
   - `send_session_reminder()`: send reminder email one day before respective sessions
   - `send_declaration_form()`: send health and travel (for COVID-19) declaration forms on the day of the session-
  
-These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails e.g., if you only want to send one-day-prior reminders, set `send_reminders=True` and `send_forms` and `send_eligible` to False. Once you're happy with the customization, it is this exact chunk in `autoremind.py` that executes the sending. 
+These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails e.g., if you only want to send one-day-prior reminders, set `send_reminders=True` and `send_forms` and `send_eligible` to False. Once you're happy with the customization, you can execute the sending.
 ```
 autoremind(participants_list, silent=False, send_eligible=False, send_reminders=True, send_forms=False)
 ```                         
@@ -67,4 +70,6 @@ Sending health and travel declaration forms to: ['Subject_1', 'Subject_2']
 
 ## Other Resources
 - [autoemailer.py](https://github.com/colinquirk/autoemailer/) which also greatly inspired this repository!
+
+
 Feel free to reach out if you've got any suggestions on how to improve / problems with the code!
