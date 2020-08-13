@@ -7,6 +7,7 @@ import secret
 import glob
 import calendar
 import time
+import numpy as np
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -18,30 +19,30 @@ from email.mime.text import MIMEText
 
 def get_participants(get_eligible=True, get_ineligible=True, get_scheduled=True, path=None):
 
+    # path = r'C:\Users\Zen Juen\Dropbox\ExperimentalParadigm\Participants'
+
     # Eligible participants
     if get_eligible:
-        participants_good = pd.read_csv('example_eligible.csv')
-
-#        Set path if there are multiple files
-#        path = r'C:\Users\Zen Juen\Dropbox\Deception_MockCrime\Deception_MockCrime\Participants'
-
-#        participants_good_files = [f for f in glob.glob(os.path.join(path, "*.csv")) if f.__contains__('Passed')]
-#        participants_good_csv = (pd.read_csv(f) for f in participants_good_files)
-#        participants_good = pd.concat(participants_good_csv, ignore_index=True)
+        if path is None:
+            participants_good = pd.read_csv('example_eligible.csv')
+        else:
+            # Set path if there are multiple files
+            participants_good_files = [f for f in glob.glob(os.path.join(path, "*.csv")) if f.__contains__('Passed')]  # identify eligible participant folders by 'Passed' in folder name
+            participants_good_csv = (pd.read_csv(f) for f in participants_good_files)
+            participants_good = pd.concat(participants_good_csv, ignore_index=True)
 
     # Ineligible participants
     if get_ineligible:
-        participants_bad = pd.read_csv('example_ineligible.csv')
-
-#        participants_bad_files = [f for f in glob.glob(os.path.join(path, "*.csv")) if f.__contains__('Failed')]
-#        participants_bad_csv = (pd.read_csv(f) for f in participants_bad_files)
-#        participants_bad = pd.concat(participants_bad_csv, ignore_index=True)
+        if path is None:
+            participants_bad = pd.read_csv('example_ineligible.csv')
+        else:
+            participants_bad_files = [f for f in glob.glob(os.path.join(path, "*.csv")) if f.__contains__('Failed')]  # identify ineligible participant folders by 'Failed' in folder name
+            participants_bad_csv = (pd.read_csv(f) for f in participants_bad_files)
+            participants_bad = pd.concat(participants_bad_csv, ignore_index=True)
 
     # Scheduled participants
     if get_scheduled:
         participants_confirmed = pd.read_csv('example_scheduled.csv')
-#    participants_confirmed.columns = participants_confirmed.iloc[0]
-#    participants_confirmed = participants_confirmed.reindex(participants_confirmed.index.drop(0)).reset_index(drop=True)
 
     participants_list = [participants_good, participants_bad, participants_confirmed]
 
@@ -49,8 +50,34 @@ def get_participants(get_eligible=True, get_ineligible=True, get_scheduled=True,
 
 
 # =============================================================================
-# Target participants
+# Identify participants for emailing
 # =============================================================================
+
+
+def target_eligibility(participants_list, silent=False,
+                       last_passed='Subject10', last_failed='Subject18'):
+    """Target participants based on eligibility.
+
+    Input arguments `last_passed` and `last_failed` to exclude prior
+    participants who have already been informed about their eligibility.
+    """
+
+    participants_good = participants_list[0]
+    participants_bad = participants_list[1]
+
+    # Eligible
+    idx_p = np.where(participants_good['Name'] == last_passed)[0]
+    send_eligible = participants_good.iloc[int(idx_p)+1:len(participants_good)]
+    if silent is False:
+        print(f'{len(send_eligible)}' + " eligible participants contacted.")
+
+    # Ineligible
+    idx_f = np.where(participants_bad['Name'] == last_failed)[0]
+    send_ineligible = participants_bad.iloc[int(idx_f)+1:len(participants_bad)]
+    if silent is False:
+        print(f'{len(send_ineligible)}' + " ineligible participants contacted.")
+
+    return send_eligible, send_ineligible
 
 
 def target_participants(participants_list, send_when="one day before", silent=False):
@@ -107,36 +134,14 @@ def target_participants(participants_list, send_when="one day before", silent=Fa
     return send_session1, send_session2
 
 
-def target_eligibility(participants_list, silent=False,
-                       last_passed='Subject3', last_failed='Subject5'):
-    """Target participants based on eligibility
-    Input arguments `last_passed` and `last_failed` to exclude prior
-    participants who have already been informed about their eligibility.
-    """
-
-    participants_good = participants_list[0]
-    participants_bad = participants_list[1]
-
-    # Eligible
-    idx_p = np.where(participants_good['Name'] == last_passed)[0]
-    send_eligible = participants_good.iloc[int(idx_p)+1:len(participants_good)]
-    if silent is False:
-        print(f'{len(send_eligible)}' + " eligible participants contacted.")
-
-    # Ineligible
-    idx_f = np.where(participants_bad['Name'] == last_failed)[0]
-    send_ineligible = participants_bad.iloc[int(idx_f)+1:len(participants_bad)]
-    if silent is False:
-        print(f'{len(send_ineligible)}' + " ineligible participants contacted.")
-
-    return send_eligible, send_ineligible
 
 # =============================================================================
 # Inform Eligibility Emails
 # =============================================================================
 
 def send_inform_eligible(participants_list, message_type='pass'):
-    """Send eligibility outcome (message_type='pass' or 'fail') to participants"""
+    """Send eligibility outcome (message_type='pass' or 'fail') to participants
+    """
 
     retry_list = []
 
@@ -155,13 +160,12 @@ def send_inform_eligible(participants_list, message_type='pass'):
     # Prepare email structure and content for sending
     for index, participant in participants.iterrows():
         to_email = participant['Email']  # activate when ready
-#        to_email = 'lauzenjuen@gmail.com'
 
         message = MIMEMultipart('alternative')
         message["From"] = from_email
         message["To"] = to_email
         message["reply-to"] = from_email
-        message["Subject"] = f'[ELIGIBILITY] Participation in "Studying the Mental Processes in Decision Making"'
+        message["Subject"] = f'[ELIGIBILITY] Participation in Experimental Paradigm'
 
         # Formatted text to be insertted
         name = f'{participant["Name"]}'
@@ -170,7 +174,7 @@ def send_inform_eligible(participants_list, message_type='pass'):
         if message_type == 'pass':
             body = """\
                 Dear """ + name + """,<br><br>
-                Thank you for <strong>completing the screening questionnaire</strong> for the study titled 'Studying the Mental Processes in Decision Making' (IRB NUMBER).<br><br>
+                Thank you for <strong>completing the screening questionnaire</strong> for the study titled 'Experimental Paradigm' (IRB NUMBER).<br><br>
                 We are glad to inform you that you are <strong><u>eligible</u></strong> to participate in this study!<br><br>
                 We are in the process of confirming the session slots for this study. Once new session slots are available, we will inform you as soon as possible. We appreciate your patience!<br><br>
                 Please feel free to contact us at insertemailhere@gmail.com should you have any queries.<br><br>
@@ -182,7 +186,7 @@ def send_inform_eligible(participants_list, message_type='pass'):
         elif message_type == 'fail':
             body = """\
                 Dear """ + name + """,<br><br>
-                Thank you for <strong>completing the screening questionnaire</strong> for the study titled 'Studying the Mental Processes in Decision Making' (IRB NUMBER).<br><br>
+                Thank you for <strong>completing the screening questionnaire</strong> for the study titled 'Experimental Paradigm' (IRB NUMBER).<br><br>
                 Unfortunately, you are <strong><u>not eligible</u></strong> for this study as you do not meet the study criteria. Once again, we thank you for your interest!<br><br>
                 Please feel free to contact us at insertemailhere@gmail.com should you have any queries.<br><br>
                 Thank you!<br><br>
@@ -212,7 +216,6 @@ def send_session_reminder(participants_list, message_type='Session 1'):
 
     # prepare server
     from_email = secret.gmail_name
-#    to_email = secret.gmail_address
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
@@ -230,20 +233,25 @@ def send_session_reminder(participants_list, message_type='Session 1'):
 
     # Prepare email structure and content for sending
     for index, participant in participants.iterrows():
-#        to_email = participant['Email']  # activate when ready!!!!!
+        to_email = participant['Email']
 
         message = MIMEMultipart('alternative')
         message["From"] = from_email
         message["To"] = to_email
         message["reply-to"] = from_email
-        message["Subject"] = f'[{message_type}'.upper() + ' REMINDER] Participation in "Studying the Mental Processes in Decision Making"'
+        message["Subject"] = f'[{message_type}'.upper() + ' REMINDER] Participation in Experimental Paradigm'
 
         # Formatted text to be insertted
         name = f'{participant["Participant Name"]}'
         phone = f'{participant["Phone"]}'
 
-        date_1 = f'{participant["Date_Session1"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session1"].weekday()]}'
-        date_2 = f'{participant["Date_Session2"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session2"].weekday()]}'
+        date_1_format = datetime.datetime.strptime(participant['Date_Session1'], '%d/%m/%Y').date()
+        date_2_format = datetime.datetime.strptime(participant['Date_Session2'], '%d/%m/%Y').date()
+        date_1 = f'{date_1_format.strftime("%d %B")}, {calendar.day_name[date_1_format.weekday()]}'
+        date_2 = f'{date_2_format.strftime("%d %B")}, {calendar.day_name[date_2_format.weekday()]}'
+
+#        date_1 = f'{participant["Date_Session1"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session1"].weekday()]}'
+#        date_2 = f'{participant["Date_Session2"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session2"].weekday()]}'
         time_1 = f'{participant["Timeslot_Session1"]}'
         time_2 = f'{participant["Timeslot_Session2"]}'
         location_1 = f'{participant["Location_Session1"]}'
@@ -253,7 +261,7 @@ def send_session_reminder(participants_list, message_type='Session 1'):
         if message_type == 'Session 1':
             body = """\
                 Dear """ + name + """,<br><br>
-                We are writing to remind you about your Session 1 slot on ‘Studying the Mental Processes of Decision Making’ tomorrow. We would like to confirm with you that you are coming for Session 1 tomorrow at: <br>
+                We are writing to remind you about your Session 1 slot on ‘Experimental Paradigm’ tomorrow. We would like to confirm with you that you are coming for Session 1 tomorrow at: <br>
                 <ul>
                 <li><strong><u>Time:</u> """ + time_1 + """</strong><br>
                 <li><strong><u>Date:</u> """ + date_1 + """</strong><br>
@@ -269,7 +277,7 @@ def send_session_reminder(participants_list, message_type='Session 1'):
         elif message_type == 'Session 2':
             body = """\
                 Dear """ + name + """,<br><br>
-                This email is to remind you about your Session 2 on ‘Studying the Mental Processes of Decision Making’ tomorrow. We will like to confirm with you that you are coming for Session 2 tomorrow at <br>
+                This email is to remind you about your Session 2 on ‘Experimental Paradigm’ tomorrow. We will like to confirm with you that you are coming for Session 2 tomorrow at <br>
                 <ul>
                 <li><strong><u>Time</u>: """ + time_2 + """</strong><br>
                 <li><strong><u>Date</u>: """ + date_2 + """</strong><br>
@@ -322,7 +330,7 @@ def send_declaration_form(participants_list, message_type='Session 1'):
         message["From"] = from_email
         message["To"] = to_email
         message["reply-to"] = from_email
-        message["Subject"] = f'[{message_type}'.upper() + ' REMINDER] Health Delcaration Form for Completion"'
+        message["Subject"] = f'[{message_type}'.upper() + ' REMINDER] Health Declaration Form for Completion'
 
         # Formatted text to be insertted
         name = f'{participant["Participant Name"]}'
@@ -331,8 +339,7 @@ def send_declaration_form(participants_list, message_type='Session 1'):
         if message_type == 'Session 1':
             body = """\
                 Dear """ + name + """,<br><br>
-                Before you come to NTU for Session 1 of "Studying the Mental Processes in
-                Decision Making" today, please kindly complete and submit this <strong>health and travel declaration
+                Before you come to NTU for Session 1 of the Experimental Paradigm today, please kindly complete and submit this <strong>health and travel declaration
                 form</strong> by <a href="https://ntuhss.az1.qualtrics.com/jfe/form/SV_9KuYYtnwXhFd1lj">clicking here</a>.<br><br>
                 All participants will have to complete this form as part of the COVID-19 safety measures.<br><br>
                 Thank you for your understanding!<br><br>
@@ -343,8 +350,7 @@ def send_declaration_form(participants_list, message_type='Session 1'):
         elif message_type == 'Session 2':
             body = """\
                 Dear """ + name + """,<br><br>
-                Before you come to NTU for Session 2 of "Studying the Mental Processes in
-                Decision Making" today, please kindly complete and submit this <strong>health and travel declaration
+                Before you come to NTU for Session 2 of Experimental Paradigm today, please kindly complete and submit this <strong>health and travel declaration
                 form</strong> by <a href="http://ntuhss.az1.qualtrics.com/jfe/form/SV_2mdgszCCaZQixZr">clicking here</a>.<br><br>
                 All participants will have to complete this form as part of the COVID-19 safety measures.<br><br>
                 Thank you for your understanding!<br><br>
@@ -490,9 +496,18 @@ def main():
 
     # Run this only when ready!
     retry_total = autoremind(participants_list, silent=False,
-                             send_eligible=True, send_reminders=True, send_forms=True)
-    if len(retry_total) != 0:
-        print('Some subjects could not be reached. Try manually sending.')
+                             send_eligible=False, send_reminders=True, send_forms=False)
+
+    count = 0
+    emails_resend = []
+    for i in retry_total:
+        count += len(i)
+        if len(i) != 0:
+            emails_resend.append(i[0]['Email'])
+
+    if count != 0:
+        print(f'{count}' + ' subjects could not be reached. Try manually sending to ' +
+              f'{emails_resend}')
 
 if __name__ == "__main__":
     try:

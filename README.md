@@ -7,10 +7,19 @@ This code was written for a study protocol where each participant has 2 sessions
 
 Running `autoremind.py` will mass send the desired mails to your participants together with printed feedback on how many subjects were contacted:
 ```
+runfile('C:/Users/Zen Juen/OneDrive/Documents/GitHub/AutoRemind/autoremind.py', wdir='C:/Users/Zen Juen/OneDrive/Documents/GitHub/AutoRemind')
+Retrieving participants particulars
+
+2 eligible participants contacted.
+3 ineligible participants contacted.
+Sending successful eligibility outcome to: ['Subject11', 'Subject12']
+Sending unsuccessful eligibility outcome to: ['Subject19', 'Subject20', 'Subject21']
 one day before: No session 1 participants to be contacted.
-one day before: No session 2 participants to be contacted.
-experiment day: 3 participants to be contacted for session 1.
-experiment day: No session 2 participants to be contacted.
+one day before: 1 participants to be contacted for session 2.
+Sending reminder emails to: ['Subject_3'].
+experiment day: No session 1 participants to be contacted.
+experiment day: 2 participants to be contacted for session 2.
+Sending health and travel declaration forms to: ['Subject_1', 'Subject_2']
 ```
 P.S. This package was borne out of a personal exasperating experience of manually emailing participants :smile:
 
