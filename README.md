@@ -1,21 +1,21 @@
-# Automate Reminder Emails for Research Participants :e-mail:
+# :e-mail: Automate Reminder Emails for Research Participants
 
 **AutoRemind** is an email automation system for sending customizable reminders to participants at different timepoints throughout a study.
 
-## Most Ideal For :star:
+## :star: Most Ideal For
 This code was written for a very specific study protocol after a personally exasperating experience of manually emailing participants :smile:
 This system will be useful if your study is **longitudinal** and comprises of
 - Screening participants for *eligibility*
 - Sending *different reminder emails* for *several sessions* across a period of time
 
 
-## Features :bulb:
+## :bulb: Features
 1) Sends emails to inform participants of their **eligibility**
 2) Sends reminder emails to scheduled participants **one day before each session**
 3) Sends reminder emails to scheduled participants on the **day of the session**
    - For now, in the message template in `autoremind.py`, this is a reminder to complete a health and travel declaration form on the morning of the experiment.
 
-## Try it Yourself 
+## :tada: Try it Yourself 
 The example csv files in this repository are meant to facilitate trial-and-error with AutoRemind. Simply change the `email` entries in the csv files to your own email address to receive templates of the messages as laid out in `autoremind.py`. You would also need to have a `secret.py` file containing your gmail credentials. If an authentication error occurs, it is most likely because you have to change the settings in your gmail account to allow access to less secure apps.
 
 ### In summary, you should have
