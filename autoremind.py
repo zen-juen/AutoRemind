@@ -8,6 +8,7 @@ import glob
 import calendar
 import time
 import numpy as np
+import imaplib
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -16,6 +17,32 @@ from email.mime.text import MIMEText
 # =============================================================================
 # Extract emails
 # =============================================================================
+
+def get_new():
+    """Get email addresses of unread emails"""
+
+    mail = imaplib.IMAP4_SSL('imap.gmail.com')
+    mail.login(secret.gmail_address, secret.gmail_password)
+    mail.list()
+    mail.select('inbox')
+    result, data = mail.uid('search', None, "UNSEEN")  # Get all unseen
+    n_unread = len(data[0].split())
+
+    new_addresses = []
+    for i in range(n_unread):
+        latest_email_uid = data[0].split()[i]
+        result, email_data = mail.uid('fetch', latest_email_uid, '(RFC822)')
+        raw_email = email_data[0][1]
+        raw_email_string = raw_email.decode('utf-8')
+        email_message = email.message_from_string(raw_email_string)
+
+        email_from = str(email.header.make_header(email.header.decode_header(email_message['From'])))
+        to = email.utils.parseaddr(email_from)[1]
+
+        new_addresses.append(to)
+
+    return new_addresses
+
 
 def get_participants(get_eligible=True, get_ineligible=True, get_scheduled=True, path=None):
 
@@ -138,6 +165,49 @@ def target_participants(participants_list, send_when="one day before", silent=Fa
 # =============================================================================
 # Inform Eligibility Emails
 # =============================================================================
+def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wtWe'):
+    retry_list = []
+
+    # prepare server
+    from_email = secret.gmail_name
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(secret.gmail_address, secret.gmail_password)
+
+    # Prepare email structure and content for sending
+    for i in new_addresses:
+        to_email = i  # activate when ready
+
+        message = MIMEMultipart('alternative')
+        message["From"] = from_email
+        message["To"] = to_email
+        message["reply-to"] = from_email
+        message["Subject"] = '[PARTICIPANTS RECRUITMENT] Experimental Paradigm'
+
+        # Main body of text
+        body = """\
+            Dear potential participant, <br><br>
+
+            Thank you for  your interest in the study titled, 'Experimental Paradigm', as described in the poster attached in this email.<br><br>
+
+            To determine your eligibility for this study, please complete the <strong><u>online screening questionnaire</u></strong> with the following link """ + link + """. <br><br>
+            We will evaluate your responses and contact you regarding your eligibility. If you have any questions, please feel free to contact us at: decisiontask.study@gmail.com.Thank you! <br><br>
+
+            Regards,<br>
+            Research Team<br>
+            Clinical Brain Lab<br>
+            """
+
+        message.attach(MIMEText(body, 'html'))
+        email_text = message.as_string()
+        try:
+            server.sendmail(from_email, to_email, email_text)
+        except Exception as e:
+            retry_list.append(i)
+            continue
+
+    return retry_list
+
 
 def send_inform_eligible(participants_list, message_type='pass'):
     """Send eligibility outcome (message_type='pass' or 'fail') to participants
@@ -432,14 +502,27 @@ def send_success():
 # Wrapper for emails
 # =============================================================================
 
-def autoremind(participants_list, silent=False,
-               send_eligible=False, send_reminders=False, send_forms=False):
+def autoremind(silent=False, send_research=False, send_eligible=False, send_reminders=False, send_forms=False):
     """Autoremind wrapper
 
-    Choose the type of emails to send or send all types by setting `send_eligible`, `send_reminders`,
+    Choose the type of emails to send or send all types by setting `send_eligible`, `send_reminders`, `send_research`, and
     `send_forms` to True.
     """
     retry_total = []
+
+    #Send research info
+    if send_research:
+        new_addresses = get_new()
+        print('Retrieving unread emails')
+
+        retry_list = send_researchinfo(new_addresses)
+        print('Sending research recruitment information to: ' +
+              f'{new_addresses}')
+        retry_total.append(retry_list)
+
+    if send_eligible or send_reminders or send_forms:
+        participants_list = get_participants()
+        print('Retrieving participants particulars')
 
     # Send eligibility
     if send_eligible:
@@ -485,17 +568,16 @@ def autoremind(participants_list, silent=False,
 
     return retry_total
 
+
 # =============================================================================
 # Execute
 # =============================================================================
 
 
 def main():
-    participants_list = get_participants()
-    print('Retrieving participants particulars')
 
     # Run this only when ready!
-    retry_total = autoremind(participants_list, silent=False,
+    retry_total = autoremind(silent=False, send_research=False,
                              send_eligible=False, send_reminders=True, send_forms=False)
 
     count = 0
