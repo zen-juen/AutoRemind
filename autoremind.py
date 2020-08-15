@@ -165,7 +165,7 @@ def target_participants(participants_list, send_when="one day before", silent=Fa
 # =============================================================================
 # Inform Eligibility Emails
 # =============================================================================
-def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wtWe'):
+def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wt'):
     retry_list = []
 
     # prepare server
@@ -505,8 +505,28 @@ def send_success():
 def autoremind(silent=False, send_research=False, send_eligible=False, send_reminders=False, send_forms=False):
     """Autoremind wrapper
 
-    Choose the type of emails to send or send all types by setting `send_eligible`, `send_reminders`, `send_research`, and
-    `send_forms` to True.
+    Choose the type of emails to send or send all types by setting parameters to True.
+
+    Parameters
+    ----------
+    send_research : bool
+        If True, extracts unread emails and their addresses, and sends research recruitment information to them.
+        Note: This will automatically mark all unread emails in your gmail as read.
+    send_eligible : bool
+        If True, sends information about eligibility to eligible and non-eligible participants.
+    send_reminders : bool
+        If True, sends reminder emails to scheduled participants one day before their experiment day.
+        Note: this script will have to be run one day before their experiment.
+    send_forms : bool
+        If True, sends reminder emaisl to scheduled participants on the day of their experiment day.
+        Note: this script will have to be run on the day of their experiment.
+    silent : bool
+        Prints feedback on number of individuals contacted for `send_eligible`, `send_reminders` and `send_forms`.
+
+    Returns
+    -------
+    retry_total : list
+        A list of participants (and their particulars) whose emails were unsuccessfully sent to.
     """
     retry_total = []
 

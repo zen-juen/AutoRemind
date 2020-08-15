@@ -35,18 +35,21 @@ If you have more than two sessions in your experiment, you can customize your ow
 
 ### Code Structure
 
-- **Extract participants**: `get_participants()` imports the csv files 
+- **Extract participants**:
+  - `get_new()`: extracts email addresses of unread emails
+  - `get_participants()`: imports csv files for eligible, non-eligible, and scheduled participants
 - **Filter participants**:
   - `target_eligibility()` identifies participants to be informed for being eligibility or non-eligible, with the ability to exclude participants who were already informed before.
   - `target_participants()` identifies participants that need to be sent reminders today or tomorrow.
 - **Execute Sending**
+  - `send_research_info()`: send emails to new email addresses regarding research participation information
   - `send_inform_eligible()`: send emails to participants based on whether they were eligible or not 
   - `send_session_reminder()`: send reminder email one day before respective sessions (for now, the code accommodates only Session 1 and Session 2)
   - `send_declaration_form()`: send health and travel (for COVID-19) declaration forms on the day of the session
  
-These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails e.g., if you only want to send one-day-prior reminders, set `send_reminders=True` and `send_forms` and `send_eligible` to False. Once you're happy with the customization, you can execute the sending.
+These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails e.g., if you only want to send one-day-prior reminders, set `send_reminders=True` and the other parameters to False. Once you're happy with the customization, you can execute the sending.
 ```
-autoremind(participants_list, silent=False, send_eligible=False, send_reminders=True, send_forms=False)
+autoremind(participants_list, silent=False, send_research=False, send_eligible=False, send_reminders=True, send_forms=False)
 ```  
 
 - **Printed Feedback**
