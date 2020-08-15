@@ -47,17 +47,16 @@ If you have more than two sessions in your experiment, you can customize your ow
   - `send_session_reminder()`: send reminder email one day before respective sessions (for now, the code accommodates only Session 1 and Session 2)
   - `send_declaration_form()`: send health and travel (for COVID-19) declaration forms on the day of the session
  
+ ### Execute It
+ 
 These functions are then wrapped in `autoremind()`, which you can choose to control the sending of a certain type of emails.
 Running `autoremind.py` will mass send the desired mails to your participants together with ***printed feedback*** on **how many subjects** and **exactly who** were contacted, like so:
 
 - For example, if you only want to send one-day-prior and on-the-day reminders, and eligibility information, set `send_reminders`, `send_eligible` and `send_forms` to `True`. Once you're happy with the customization, you can execute the sending.
 ```
 autoremind(participants_list, silent=False, send_research=False, send_eligible=True, send_reminders=True, send_forms=True)
-```  
 
-Printed feedback:
-
-```
+### Printed feedback ###
 2 eligible participants contacted.
 3 ineligible participants contacted.
 Sending successful eligibility outcome to: ['Subject11', 'Subject12']
@@ -75,13 +74,12 @@ Sending health and travel declaration forms to: ['Subject_1', 'Subject_2']
 
 ```
 autoremind(participants_list, silent=False, send_research=True, send_eligible=False, send_reminders=False, send_forms=False)
-```  
-Printed feedback:
 
-```
+### Printed feedback ###
 Retrieving unread emails
 Sending research recruitment information to: ['insertyouremail1@gmail.com', 'insertyouremail2@e.ntu.edu.sg']
-```
+```  
+
 
 ## Other Resources
 - [autoemailer.py](https://github.com/colinquirk/autoemailer/) which also greatly inspired this repository!
