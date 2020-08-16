@@ -165,7 +165,7 @@ def target_participants(participants_list, send_when="one day before", silent=Fa
 # =============================================================================
 # Inform Eligibility Emails
 # =============================================================================
-def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wt'):
+def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wt', to_send=False):
     retry_list = []
 
     # prepare server
@@ -201,7 +201,8 @@ def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/f
         message.attach(MIMEText(body, 'html'))
         email_text = message.as_string()
         try:
-            server.sendmail(from_email, to_email, email_text)
+            if to_send:
+                server.sendmail(from_email, to_email, email_text)
         except Exception as e:
             retry_list.append(i)
             continue
@@ -209,7 +210,7 @@ def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/f
     return retry_list
 
 
-def send_inform_eligible(participants_list, message_type='pass'):
+def send_inform_eligible(participants_list, message_type='pass', to_send=False):
     """Send eligibility outcome (message_type='pass' or 'fail') to participants
     """
 
@@ -268,7 +269,8 @@ def send_inform_eligible(participants_list, message_type='pass'):
         message.attach(MIMEText(body, 'html'))
         email_text = message.as_string()
         try:
-            server.sendmail(from_email, to_email, email_text)
+            if to_send:
+                server.sendmail(from_email, to_email, email_text)
         except Exception as e:
             retry_list.append(participant)
             continue
@@ -280,7 +282,7 @@ def send_inform_eligible(participants_list, message_type='pass'):
 # Types of Reminder Emails
 # =============================================================================
 
-def send_session_reminder(participants_list, message_type='Session 1'):
+def send_session_reminder(participants_list, message_type='Session 1', to_send=False):
     """Send different session reminders one day before the respective sessions"""
     retry_list = []
 
@@ -363,14 +365,16 @@ def send_session_reminder(participants_list, message_type='Session 1'):
         message.attach(MIMEText(body, 'html'))
         email_text = message.as_string()
         try:
-            server.sendmail(from_email, to_email, email_text)
+            if to_send:
+                server.sendmail(from_email, to_email, email_text)
         except Exception as e:
             retry_list.append(participant)
             continue
 
     return retry_list
 
-def send_declaration_form(participants_list, message_type='Session 1'):
+
+def send_declaration_form(participants_list, message_type='Session 1', to_send=False):
     """Health and travel declaration forms to be sent on the morning of each session"""
     retry_list = []
 
@@ -432,7 +436,8 @@ def send_declaration_form(participants_list, message_type='Session 1'):
         message.attach(MIMEText(body, 'html'))
         email_text = message.as_string()
         try:
-            server.sendmail(from_email, to_email, email_text)
+            if to_send:
+                server.sendmail(from_email, to_email, email_text)
         except Exception as e:
             retry_list.append(participant)
             continue
@@ -530,13 +535,22 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
     """
     retry_total = []
 
+    value = input("Please type 'send' to execute AutoRemind. Type anything else to only get printed feedback on participants receiving the emails.")
+    to_send = False
+    if value == 'send':
+        to_send = True
+        print('Sending...')
+    else:
+        print('Skip sending...')
+
+
     #Send research info
     if send_research:
         new_addresses = get_new()
         print('Retrieving unread emails')
 
         retry_list = send_researchinfo(new_addresses)
-        print('Sending research recruitment information to: ' +
+        print('Research recruitment information to: ' +
               f'{new_addresses}')
         retry_total.append(retry_list)
 
@@ -550,11 +564,11 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
         if len(n_pass) != 0:
             retry_list = send_inform_eligible(participants_list, message_type='pass')
             retry_total.append(retry_list)
-            print('Sending successful eligibility outcome to: ' +
+            print('Successful eligibility outcome to: ' +
                   f'{list(n_pass["Name"])}')
         if len(n_fail) != 0:
             retry_list = send_inform_eligible(participants_list, message_type='fail')
-            print('Sending unsuccessful eligibility outcome to: ' +
+            print('Unsuccessful eligibility outcome to: ' +
                   f'{list(n_fail["Name"])}')
             retry_total.append(retry_list)
 
@@ -563,12 +577,12 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
         daybefore_session1, daybefore_session2 = target_participants(participants_list, send_when="one day before", silent=silent)
         if len(daybefore_session1) != 0:
             retry_list = send_session_reminder(participants_list, message_type='Session 1')
-            print('Sending reminder emails to: ' +
+            print('Reminder emails to: ' +
                   f'{list(np.array(daybefore_session1["Participant Name"]))}')
             retry_total.append(retry_list)
         if len(daybefore_session2) != 0:
             retry_list = send_session_reminder(participants_list, message_type='Session 2')
-            print('Sending reminder emails to: ' +
+            print('Reminder emails to: ' +
                   f'{list(np.array(daybefore_session2["Participant Name"]))}')
             retry_total.append(retry_list)
 
@@ -577,12 +591,12 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
         actual_session1, actual_session2 = target_participants(participants_list, send_when="experiment day", silent=silent)
         if len(actual_session1) != 0:
             retry_list = send_declaration_form(participants_list, message_type='Session 1')
-            print('Sending health and travel declaration forms to: ' +
+            print('Health and travel declaration forms to: ' +
                   f'{list(np.array(actual_session1["Participant Name"]))}')
             retry_total.append(retry_list)
         if len(actual_session2) != 0:
             retry_list = send_declaration_form(participants_list, message_type='Session 2')
-            print('Sending health and travel declaration forms to: ' +
+            print('Health and travel declaration forms to: ' +
                   f'{list(np.array(actual_session2["Participant Name"]))}')
             retry_total.append(retry_list)
 
