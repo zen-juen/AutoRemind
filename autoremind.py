@@ -107,6 +107,18 @@ def target_eligibility(participants_list, silent=False,
     return send_eligible, send_ineligible
 
 
+def target_confirmation(participants_list, silent=False):
+    """
+    Target participants to be contacted for confirmation of session slots
+    """
+    participants_confirmed = participants_list[2]
+    participants = participants_confirmed[participants_confirmed['Timeslots Confirmed'] == 'No']
+    if silent is False:
+        print(f'{len(participants)}' + " participants to seek confirmation of session slots.")
+
+    return participants
+
+
 def target_participants(participants_list, send_when="one day before", silent=False):
     """
     Target scheduled participants to be contacted either "one day before" or "experiment day"
@@ -163,7 +175,7 @@ def target_participants(participants_list, send_when="one day before", silent=Fa
 
 
 # =============================================================================
-# Inform Eligibility Emails
+# Send research information to new emails
 # =============================================================================
 def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/form/SV_ePZ13fZ4kPrF0wt', to_send=False):
     retry_list = []
@@ -210,6 +222,80 @@ def send_researchinfo(new_addresses, link='http://ntuhss.az1.qualtrics.com/jfe/f
     return retry_list
 
 
+# =============================================================================
+# Check confirmation of slots
+# =============================================================================
+def send_session_confirmation(participants_list, to_send=False):
+    """Ask participants to confirm allocated slots, can be sent any day (just need
+    to be sufficiently early than Session 1 and 2 dates"""
+    retry_list = []
+
+    participants = target_confirmation(participants_list, silent=True)
+
+    # prepare server
+    from_email = secret.gmail_name
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(secret.gmail_address, secret.gmail_password)
+
+    # Prepare email structure and content for sending
+    for index, participant in participants.iterrows():
+        to_email = participant['Email']
+#        to_email = 'lauzenjuen@gmail.com'
+
+        message = MIMEMultipart('alternative')
+        message["From"] = from_email
+        message["To"] = to_email
+        message["reply-to"] = from_email
+        message["Subject"] = f'[SESSION SLOTS CONFIRMED] Participation in Experimental Paradigm"'
+
+        # Formatted text to be insertted
+        name = f'{participant["Participant Name"]}'
+
+        date_1 = f'{participant["Date_Session1"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session1"].weekday()]}'
+        date_2 = f'{participant["Date_Session2"].date().strftime("%d %B")}, {calendar.day_name[participant["Date_Session2"].weekday()]}'
+        time_1 = f'{participant["Timeslot_Session1"]}'
+        time_2 = f'{participant["Timeslot_Session2"]}'
+
+        body = """\
+            Dear """ + name + """,<br><br>
+            Thank you for completing the doodle poll. Based on your indicated availabilities, we have arranged your Session 2 timeslot as follows:<br><br>
+            <ul>
+            <strong><u>Session 1</u></strong>
+            <li><strong>Date:</u> """ + date_1 + """</strong><br>
+            <li><strong>Time:</u> """ + time_1 + """</strong><br>
+            <li><strong>Location:</u> Nanyang Technological University (NTU), School of Humanities and School of Social Sciences (48 Nanyang Avenue)</strong><br>
+            </ul><br>
+
+            <ul>
+            <strong><u>Session 2 (Day of MRI Scan)</u></strong>
+            <li><strong>Date:</u> """ + date_2 + """</strong><br>
+            <li><strong>Time:</u> """ + time_2 + """</strong><br>
+            <li><strong>Location:</u> Nanyang Technological University (NTU), School of Humanities and School of Social Sciences (48 Nanyang Avenue)</strong><br>
+            </ul><br>
+            Would these arrangements work for you? Do let us know as soon as possible and we will provide you with more details in preparation for the research experiment.<br>
+            Thank you and take care!<br>
+            <br>
+            Regards<br>
+            Research Team<br>
+            Clinical Brain Lab<br>
+            """
+
+        message.attach(MIMEText(body, 'html'))
+        email_text = message.as_string()
+        try:
+            if to_send:
+                server.sendmail(from_email, to_email, email_text)
+        except Exception as e:
+            retry_list.append(participant)
+            continue
+
+    return retry_list
+
+
+# =============================================================================
+# Send Eligibility Information
+# =============================================================================
 def send_inform_eligible(participants_list, message_type='pass', to_send=False):
     """Send eligibility outcome (message_type='pass' or 'fail') to participants
     """
@@ -507,7 +593,7 @@ def send_success():
 # Wrapper for emails
 # =============================================================================
 
-def autoremind(silent=False, send_research=False, send_eligible=False, send_reminders=False, send_forms=False):
+def autoremind(silent=False, send_research=False, send_eligible=False, send_confirmation=False, send_reminders=False, send_forms=False):
     """Autoremind wrapper
 
     Choose the type of emails to send or send all types by setting parameters to True.
@@ -554,7 +640,7 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
               f'{new_addresses}')
         retry_total.append(retry_list)
 
-    if send_eligible or send_reminders or send_forms:
+    if send_eligible or send_reminders or send_forms or send_confirmation:
         participants_list = get_participants()
         print('Retrieving participants particulars')
 
@@ -571,6 +657,14 @@ def autoremind(silent=False, send_research=False, send_eligible=False, send_remi
             print('Unsuccessful eligibility outcome to: ' +
                   f'{list(n_fail["Name"])}')
             retry_total.append(retry_list)
+
+    # Send session confirmation
+    if send_confirmation:
+        n_confirm = target_confirmation(participants_list, silent=silent)
+        retry_list = send_session_confirmation(participants_list, to_send=to_send)
+        print('Confirmation of session slots to: ' +
+              f'{list(n_confirm["Participant Name"])}')
+        retry_total.append(retry_list)
 
     # Send one-day-prior reminders
     if send_reminders:
@@ -612,7 +706,9 @@ def main():
 
     # Run this only when ready!
     retry_total = autoremind(silent=False, send_research=False,
-                             send_eligible=False, send_reminders=True, send_forms=False)
+                             send_eligible=False,
+                             send_confirmation=False,
+                             send_reminders=True, send_forms=False)
 
     count = 0
     emails_resend = []
