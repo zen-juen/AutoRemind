@@ -2,6 +2,8 @@
 
 **AutoRemind** is a Python email automation system for sending customizable reminders to participants at different timepoints throughout a study.
 
+Check out [AutoCalendar](https://github.com/zen-juen/AutoCalendar/) too!
+
 ## :star: Most Ideal For
 This code was written for a very specific study protocol after a personally exasperating experience of manually emailing participants :smile:
 This system will be useful if your study is **longitudinal** and comprises of
