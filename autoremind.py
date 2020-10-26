@@ -786,7 +786,7 @@ def autoremind(
         new_addresses = get_new()
         print("Retrieving unread emails")
 
-        retry_list = send_researchinfo(new_addresses)
+        retry_list = send_researchinfo(new_addresses, to_send=to_send)
         print("Research recruitment information to: " + f"{new_addresses}")
         retry_total.append(retry_list)
 
@@ -798,11 +798,11 @@ def autoremind(
     if send_eligible:
         n_pass, n_fail = target_eligibility(participants_list, silent=silent)
         if len(n_pass) != 0:
-            retry_list = send_inform_eligible(participants_list, message_type="pass")
+            retry_list = send_inform_eligible(participants_list, message_type="pass", to_send=to_send)
             retry_total.append(retry_list)
             print("Successful eligibility outcome to: " + f'{list(n_pass["Name"])}')
         if len(n_fail) != 0:
-            retry_list = send_inform_eligible(participants_list, message_type="fail")
+            retry_list = send_inform_eligible(participants_list, message_type="fail", to_send=to_send)
             print("Unsuccessful eligibility outcome to: " + f'{list(n_fail["Name"])}')
             retry_total.append(retry_list)
 
@@ -823,7 +823,7 @@ def autoremind(
         )
         if len(daybefore_session1) != 0:
             retry_list = send_session_reminder(
-                participants_list, message_type="Session 1"
+                participants_list, message_type="Session 1", to_send=to_send
             )
             print(
                 "Reminder emails to: "
@@ -832,7 +832,7 @@ def autoremind(
             retry_total.append(retry_list)
         if len(daybefore_session2) != 0:
             retry_list = send_session_reminder(
-                participants_list, message_type="Session 2"
+                participants_list, message_type="Session 2", to_send=to_send
             )
             print(
                 "Reminder emails to: "
@@ -847,7 +847,7 @@ def autoremind(
         )
         if len(actual_session1) != 0:
             retry_list = send_declaration_form(
-                participants_list, message_type="Session 1"
+                participants_list, message_type="Session 1", to_send=to_send
             )
             print(
                 "Health and travel declaration forms to: "
@@ -856,7 +856,7 @@ def autoremind(
             retry_total.append(retry_list)
         if len(actual_session2) != 0:
             retry_list = send_declaration_form(
-                participants_list, message_type="Session 2"
+                participants_list, message_type="Session 2", to_send=to_send
             )
             print(
                 "Health and travel declaration forms to: "
